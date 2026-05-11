@@ -8,7 +8,7 @@ programa
         inteiro partida_atual = 0
         logico jogando_campeonato = verdadeiro
         
-        escreva("🔥=== BATTLE ROYALE PORTUGOL V4.0 ===🔥\n")
+        escreva("🔥=== TIRO EM PORTUGOL V4.0 ===🔥\n")
         escreva("🎮 ESCOLHA O MODO:\n")
         escreva("1 - Partida Única ⚡\n")
         escreva("2 - Melhor de 3 🏆 (Quem fizer 3 BOOYAH ganha)\n")
