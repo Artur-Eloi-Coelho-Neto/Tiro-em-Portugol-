@@ -1,0 +1,252 @@
+programa 
+{
+    funcao inicio()
+    {
+        inteiro modo_jogo
+        inteiro vitorias_jogador = 0
+        inteiro vitorias_bot = 0
+        inteiro partida_atual = 0
+        logico jogando_campeonato = verdadeiro
+        
+        escreva("🔥=== BATTLE ROYALE PORTUGOL V4.0 ===🔥\n")
+        escreva("🎮 ESCOLHA O MODO:\n")
+        escreva("1 - Partida Única ⚡\n")
+        escreva("2 - Melhor de 3 🏆 (Quem fizer 3 BOOYAH ganha)\n")
+        leia(modo_jogo)
+        
+        enquanto(jogando_campeonato == verdadeiro)
+        {
+            partida_atual = partida_atual + 1
+            logico resultado_partida = jogar_partida(partida_atual, modo_jogo, vitorias_jogador, vitorias_bot)
+            
+            se(resultado_partida == verdadeiro)
+            {
+                vitorias_jogador = vitorias_jogador + 1
+                escreva("\n🏆 VOCÊ VENCEU A PARTIDA ", partida_atual, "!\n")
+            }
+            senao
+            {
+                vitorias_bot = vitorias_bot + 1
+                escreva("\n💀 BOT VENCEU A PARTIDA ", partida_atual, "\n")
+            }
+            
+            se(modo_jogo == 1) // Partida única
+            {
+                jogando_campeonato = falso
+            }
+            senao se(modo_jogo == 2) // MD3
+            {
+                escreva("\n📊 PLACAR MD3: VOCÊ ", vitorias_jogador, " x ", vitorias_bot, " BOT\n")
+                se(vitorias_jogador == 3)
+                {
+                    escreva("\n🏆🏆🏆 CAMPEÃO MD3! VOCÊ AMASSOU 3x0 🏆🏆🏆\n")
+                    jogando_campeonato = falso
+                }
+                senao se(vitorias_bot == 3)
+                {
+                    escreva("\n💀💀💀 BOT CAMPEÃO MD3! 3x0 💀💀💀\n")
+                    jogando_campeonato = falso
+                }
+                senao
+                {
+                    escreva("\n⏎ Enter pra próxima partida MD3...")
+                    cadeia pausa
+                    leia(pausa)
+                }
+            }
+        }
+        escreva("\n🎮 FIM DO CAMPEONATO 🎮\n")
+        escreva("PLACAR FINAL: VOCÊ ", vitorias_jogador, " x ", vitorias_bot, " BOT\n")
+    }
+    
+    funcao logico jogar_partida(inteiro num_partida, inteiro modo, inteiro v_jogador, inteiro v_bot)
+    {
+        // JOGADOR
+        inteiro vida_jogador = 100
+        inteiro colete_jogador = 0
+        inteiro municao_jogador = 7
+        inteiro dano_arma_jogador = 62
+        cadeia arma_jogador = "Águia do Deserto 🦅"
+        inteiro parede_gelo = 3
+        inteiro granada = 2
+        inteiro cogumelo = 1
+        
+        // INIMIGO
+        inteiro vida_inimigo = 100
+        inteiro colete_inimigo = 25
+        inteiro municao_inimigo = 30
+        inteiro dano_arma_inimigo = 23
+        cadeia arma_inimigo = "UMP 🔫"
+        logico inimigo_tem_gelo = verdadeiro
+        
+        // MAPA
+        inteiro zona = 5
+        inteiro turno = 0
+        inteiro acao
+        inteiro dano
+        logico jogando = verdadeiro
+        logico parede_ativa = falso
+        
+        limpa()
+        escreva("🔥=== PARTIDA ", num_partida, " ===🔥\n")
+        se(modo == 2) { escreva("📊 MD3: ", v_jogador, " x ", v_bot, "\n") }
+        escreva("📍 Drop em Bermuda 🦅 | 🧊 Correr dá +1 Gelo\n\n")
+        
+        enquanto(jogando == verdadeiro)
+        {
+            turno = turno + 1
+            limpa()
+            
+            // HUD SÓ EMOJI
+            escreva("⏰ T", turno, " | 🌀", zona, " | PARTIDA ", num_partida)
+            se(modo == 2) { escreva(" | MD3: ", v_jogador, "x", v_bot) }
+            escreva("\n")
+            escreva("❤️", vida_jogador, " | 🛡️", colete_jogador, " | ", arma_jogador, " | 🔢", municao_jogador, "\n")
+            escreva("🧊", parede_gelo, " | 💣", granada, " | 🍄", cogumelo, "\n")
+            escreva("💀❤️", vida_inimigo, " | 🛡️", colete_inimigo, " | ", arma_inimigo, "\n")
+            se(parede_ativa == verdadeiro) { escreva("🧊 GELO ATIVO\n") }
+            escreva("--------------------------------\n")
+            
+            // DICAS
+            escreva("💡 ")
+            se(vida_jogador <= 30 e parede_gelo > 0) { escreva("Vida baixa! Gelo 5 🆘🧊\n") }
+            senao se(vida_jogador <= 30 e cogumelo > 0) { escreva("Cogumelo 7 = 50 HP 🍄\n") }
+            senao se(vida_inimigo <= 40 e granada > 0) { escreva("Granada 6 pra finalizar 💣\n") }
+            senao se(arma_jogador == "Águia do Deserto 🦅" e turno % 2 == 0) { escreva("CAPA 90 no turno par 🎯\n") }
+            senao se(zona <= 2) { escreva("Corre 4 = +1 gelo 🧊\n") }
+            senao { escreva("T2=AK T4=Colete T6=Águia T8=Gelo T10=Doze\n") }
+            escreva("--------------------------------\n")
+            
+            // ZONA
+            se(turno % 3 == 0 e zona > 1)
+            {
+                zona = zona - 1
+                escreva("🌀 ZONA 🌀", zona, "\n")
+                se(zona <= 2)
+                {
+                    se(parede_ativa == verdadeiro) { escreva("🧊 Gelo salvou da zona!\n") parede_ativa = falso }
+                    senao { escreva("☠️ -15 zona!\n") vida_jogador = vida_jogador - 15 }
+                }
+            }
+            
+            // MORTE
+            se(vida_jogador <= 0) { escreva("\n💀 VOCÊ MORREU\n") retorne falso }
+            se(vida_inimigo <= 0) { escreva("\n🏆 BOOYAH!\n") retorne verdadeiro }
+            se(zona == 0) { escreva("\n☠️ ZONA MATOU TODO MUNDO\n") retorne falso }
+            
+            parede_ativa = falso
+            
+            // MENU
+            escreva("\n🎮 1🔫 2📦 3💊 4🏃 5🧊", parede_gelo, " 6💣", granada, " 7🍄", cogumelo, "\n")
+            leia(acao)
+            
+            escolha(acao)
+            {
+                caso 1: // ATIRAR
+                    se(municao_jogador > 0)
+                    {
+                        municao_jogador = municao_jogador - 1
+                        dano = dano_arma_jogador
+                        se(arma_jogador == "Águia do Deserto 🦅" e turno % 2 == 0)
+                        {
+                            se(turno % 6 == 0) { dano = 999 escreva("💀 CAPA 999! ") }
+                            senao { dano = 90 escreva("🎯 HEADSHOT! ") }
+                        }
+                        se(colete_inimigo > 0)
+                        {
+                            se(colete_inimigo >= dano) { colete_inimigo = colete_inimigo - dano dano = 0 }
+                            senao { dano = dano - colete_inimigo colete_inimigo = 0 }
+                        }
+                        vida_inimigo = vida_inimigo - dano
+                        escreva("💥 ", dano, " dano!\n")
+                        se(vida_inimigo > 0 e vida_inimigo <= 25) { escreva("⚠️ ONE SHOT!\n") }
+                    }
+                    senao
+                    {
+                        escreva("🔄 Recarregando...\n")
+                        se(arma_jogador == "Águia do Deserto 🦅") { municao_jogador = 7 }
+                        se(arma_jogador == "AK-47 🔥") { municao_jogador = 30 }
+                        se(arma_jogador == "M1014 💥") { municao_jogador = 5 }
+                    }
+                    pare
+                    
+                caso 2: // LOOT
+                    se(turno == 2) { arma_jogador = "AK-47 🔥" dano_arma_jogador = 29 municao_jogador = 30 escreva("✅ AK-47!\n") }
+                    senao se(turno == 4) { colete_jogador = 75 escreva("✅ COLETE NV3!\n") }
+                    senao se(turno == 6) { arma_jogador = "Águia do Deserto 🦅" dano_arma_jogador = 62 municao_jogador = 7 escreva("✅ ÁGUIA!\n") }
+                    senao se(turno == 8) { parede_gelo = parede_gelo + 2 granada = granada + 1 escreva("📦 +2🧊 +1💣\n") }
+                    senao se(turno == 10) { arma_jogador = "M1014 💥" dano_arma_jogador = 80 municao_jogador = 5 escreva("🔥 DOZE!\n") }
+                    senao { municao_jogador = municao_jogador + 10 cogumelo = cogumelo + 1 escreva("📦 +10🔢 +1🍄\n") }
+                    pare
+                    
+                caso 3: // KIT
+                    se(vida_jogador == 100) { escreva("❌ Vida cheia\n") }
+                    senao { vida_jogador = vida_jogador + 30 se(vida_jogador > 100) { vida_jogador = 100 } escreva("💊 +30 HP\n") }
+                    pare
+                    
+                caso 4: // CORRER + GELO
+                    escreva("🏃 Correu\n")
+                    parede_gelo = parede_gelo + 1
+                    escreva("🧊 +1 Gelo!\n")
+                    se(turno == 3) { colete_jogador = 50 escreva("🎒 Colete Nv2!\n") }
+                    pare
+                    
+                caso 5: // GELO
+                    se(parede_gelo > 0) { parede_gelo = parede_gelo - 1 parede_ativa = verdadeiro escreva("🧊 GELO ATIVO!\n") }
+                    senao { escreva("❌ Sem gelo\n") }
+                    pare
+                    
+                caso 6: // GRANADA
+                    se(granada > 0)
+                    {
+                        granada = granada - 1
+                        dano = 50
+                        se(colete_inimigo > 0) { colete_inimigo = colete_inimigo - 25 se(colete_inimigo < 0) { colete_inimigo = 0 } }
+                        vida_inimigo = vida_inimigo - dano
+                        escreva("💣💥 50 dano!\n")
+                    }
+                    senao { escreva("❌ Sem granada\n") }
+                    pare
+                    
+                caso 7: // COGUMELO
+                    se(cogumelo > 0) { cogumelo = cogumelo - 1 vida_jogador = vida_jogador + 50 se(vida_jogador > 100) { vida_jogador = 100 } escreva("🍄 +50 HP!\n") }
+                    senao { escreva("❌ Sem cogumelo\n") }
+                    pare
+                    
+                caso contrario: escreva("❌ 1-7\n")
+            }
+            
+            // BOT
+            se(vida_inimigo > 0)
+            {
+                escreva("\n--- 😈 BOT ---\n")
+                se(vida_inimigo <= 40 e inimigo_tem_gelo == verdadeiro) { inimigo_tem_gelo = falso escreva("🧊 Bot usou GELO!\n") }
+                senao se(municao_inimigo > 0 e parede_ativa == falso)
+                {
+                    para(inteiro tiro = 1; tiro <= 2; tiro++)
+                    {
+                        se(municao_inimigo > 0 e vida_jogador > 0)
+                        {
+                            municao_inimigo = municao_inimigo - 1
+                            dano = dano_arma_inimigo
+                            se(colete_jogador > 0)
+                            {
+                                se(colete_jogador >= dano) { colete_jogador = colete_jogador - dano dano = 0 }
+                                senao { dano = dano - colete_jogador colete_jogador = 0 }
+                            }
+                            vida_jogador = vida_jogador - dano
+                            escreva("💥 UMP ", dano_arma_inimigo, "\n")
+                        }
+                    }
+                }
+                senao se(parede_ativa == verdadeiro) { escreva("🧊 Bloqueou!\n") parede_ativa = falso }
+                senao { escreva("🔄 Bot recarregando\n") municao_inimigo = 30 }
+            }
+            
+            escreva("\n⏎ Enter...")
+            cadeia pausa
+            leia(pausa)
+        }
+        retorne falso
+    }
+}
